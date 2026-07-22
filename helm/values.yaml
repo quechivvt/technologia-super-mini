@@ -1,0 +1,58 @@
+deployment:
+  name: fastapi
+
+replicaCount: 2
+
+image:
+  repository: chinguyen2407k22/fastapi
+  tag: v3
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+readinessProbe:
+  path: /health
+
+livenessProbe:
+  path: /health
+
+service:
+  type: ClusterIP
+
+  port: 80
+
+  targetPort: 8000
+
+config:
+  APP_NAME: "FastAPI Demo"
+  DEBUG: "True"
+
+secret:
+  DB_HOST: "aws-1-ap-southeast-2.pooler.supabase.com"
+  DB_PORT: "6543"
+  DB_NAME: "postgres"
+  DB_USER: "postgres.misxloouxrtkxgewgmlt"
+  DB_PASSWORD: "f4b3a2e1-9c8d-4b7a-a1b2-c3d4e5f60718"
+
+ingress:
+  className: nginx
+  host: fastapi.local
+  path: /
+  pathType: Prefix
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70

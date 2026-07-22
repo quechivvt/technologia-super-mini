@@ -2,13 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: fastapi
-  namespace: demo
-  labels:
-    app: fastapi
+  name: {{ .Values.deployment.name }}
 
 spec:
-  replicas: 2
+  replicas: {{ .Values.replicaCount }}
 
   selector:
     matchLabels:
@@ -22,22 +19,22 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: chinguyen2407k22/fastapi:v3
-          imagePullPolicy: Always
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
 
           ports:
-            - containerPort: 8000
+            - containerPort: {{ .Values.service.targetPort }}
 
           envFrom:
             - configMapRef:
                 name: fastapi-config
             - secretRef:
                 name: fastapi-secret
-          
+
           readinessProbe:
             httpGet:
-              path: /health
-              port: 8000
+              path: {{ .Values.readinessProbe.path }}
+              port: {{ .Values.service.targetPort }}
 
             initialDelaySeconds: 5
             periodSeconds: 5
@@ -47,8 +44,8 @@ spec:
 
           livenessProbe:
             httpGet:
-              path: /health
-              port: 8000
+              path: {{ .Values.livenessProbe.path }}
+              port: {{ .Values.service.targetPort }}
 
             initialDelaySeconds: 15
             periodSeconds: 10
@@ -56,10 +53,4 @@ spec:
             failureThreshold: 3
 
           resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
+          {{- toYaml .Values.resources | nindent 12 }}
