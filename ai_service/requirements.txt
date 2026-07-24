@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+websockets
+python-dotenv
+openai
+google-genai
+pydantic-settings==2.14.2
+httpx
+python-socketio[asgi]
