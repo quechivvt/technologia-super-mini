@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis_data:/data
+
+    command: >
+      redis-server
+      --appendonly yes
+
+  user-service:
+
+    build:
+      context: ./user_service
+
+    container_name: user-service
+
+    env_file:
+      - ./user_service/.env
+
+    depends_on:
+      - redis
+
+    ports:
+      - "8001:8000"
+
+  product-service:
+
+    build:
+      context: ./product_service
+
+    container_name: product-service
+
+    env_file:
+      - ./product_service/.env
+
+    depends_on:
+      - redis
+
+    ports:
+      - "8002:8000"
+
+  notification-service:
+
+    build:
+      context: ./notification_service
+
+    container_name: notification-service
+
+    env_file:
+      - ./notification_service/.env
+
+    depends_on:
+      - redis
+
+  ai-service:
+    build:
+      context: ./ai_service
+
+    container_name: ai-service
+
+    env_file:
+      - ./ai_service/.env
+
+    ports:
+      - "8003:8000"
+
+volumes:
+  redis_data:

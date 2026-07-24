@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+redis
+pydantic-settings
+logging==0.4.9.6
+grpcio
+grpcio-tools
